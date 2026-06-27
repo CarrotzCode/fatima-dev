@@ -4,35 +4,47 @@ const dotsContainer = document.getElementById("dots");
 
 let current = 0;
 let autoplayInterval = null;
-
 const total = slides.length;
 
 /* -------------------------
    INIT DOTS
 ------------------------- */
+
 function createDots() {
+    const fragment = document.createDocumentFragment(); //کلا یه بار اضافه میکنه
     slides.forEach((_, i) => {
         const dot = document.createElement("button");
         dot.className = "w-2.5 h-2.5 rounded-full transition-all";
         dot.addEventListener("click", () => goTo(i));
-        dotsContainer.appendChild(dot);
+        dots.push(dot);
+        fragment.appendChild(dot);
     });
-}
+    dotsContainer.appendChild(fragment);
+};
 
 /* -------------------------
    UPDATE UI
 ------------------------- */
-function updateUI() {
-    slides.forEach((slide, i) => {
-        slide.style.opacity = i === current ? "1" : "0";
-        slide.style.zIndex = i === current ? "10" : "0";
-    });
+// function updateUI() {
+//     slides.forEach((slide, i) => {
+//         slide.style.opacity = i === current ? "1" : "0";
+//         slide.style.zIndex = i === current ? "10" : "0";
+//     });
 
-    [...dotsContainer.children].forEach((dot, i) => {
-        dot.classList.toggle("bg-white", i === current);
-        dot.classList.toggle("bg-white/40", i !== current);
-    });
-}
+//     [...dotsContainer.children].forEach((dot, i) => {
+//         dot.classList.toggle("bg-white", i === current);
+//         dot.classList.toggle("bg-white/40", i !== current);
+//     });
+// }
+
+function updateUI() {
+    slides[current].classList.add("active");
+    dots[current].classList.replace("bg-white/40", "bg-white");
+
+    const prev = (current - 1 + total) % total; // فقط قبلی رو پاک میکنه
+    slides[prev].classList.remove("active");
+    dots[prev].classList.replace("bg-white", "bg-white/40");
+};
 
 /* -------------------------
    INFINITE LOGIC
@@ -48,10 +60,13 @@ function prev() {
 }
 
 function goTo(i) {
+    const old = current;
     current = i;
+    slides[old].classList.remove("active");                           //این یه قسمتو حتما حتما چک کن درست باشهههه ((((:
+    dots[old].classList.replace("bg-white", "bg-white/40");
     updateUI();
     resetAutoplay();
-}
+};
 
 /* -------------------------
    AUTOPLAY
